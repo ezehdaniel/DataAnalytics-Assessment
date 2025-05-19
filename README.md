@@ -31,7 +31,7 @@ Identify customers who have both a funded savings plan and a funded investment p
 
 ### Challenge:
 
-Some user `name` fields were null. A `LEFT JOIN` and ensuring proper test data population resolved this.
+Some user `name` fields were null.  ensuring proper test data population resolved this.
 
 ---
 
@@ -73,7 +73,7 @@ Identify all active savings or investment plans with no transactions in the last
 
 ### Challenge:
 
-Plans with no transactions were excluded due to INNER JOIN on transaction history. A future enhancement could use a `LEFT JOIN`.
+Plans with no transactions were excluded due to INNER JOIN on transaction history.
 
 ---
 
@@ -83,21 +83,36 @@ Plans with no transactions were excluded due to INNER JOIN on transaction histor
 
 Estimate Customer Lifetime Value (CLV) based on transaction activity and account tenure.
 
-### Assumption:
+## Approach:
 
-CLV = (total\_transactions / tenure\_months) \* 12 \* average\_profit\_per\_transaction
+Calculate tenure in months from signup_date.
 
-* profit\_per\_transaction = 0.1% of transaction value (in kobo)
+Count total transactions and calculate average transaction profit (0.1% of value).
 
-### Approach:
+Use formula: (total_transactions / tenure) * 12 * avg_profit_per_transaction
 
-* Join `users_customuser` and `savings_savingsaccount`.
-* Calculate tenure in months using signup date and current date.
-* Sum up transaction value to get total deposits.
-* Count total transactions.
-* Derive average profit and use the formula to calculate CLV.
+Output includes customer_id, name, tenure, transaction count, and CLV estimate.
 
-### Challenge:
+## General Challenges Encountered:
+
+Incorrect Function Usage in MySQL
+
+Initially, I used DATE_PART, which is unsupported in MySQL. Replaced with TIMESTAMPDIFF.
+
+
+Assumed created_at existed, but the field was named created_on. Adjusted query accordingly.
+
+Schema Clarification
+
+Required examining table structure to identify transaction inflow fields (confirmed_amount).
+
+Category Distribution Mismatch
+
+Real result distributions differed from expected due to actual data patterns. Adjusted logic and verified output integrity.
+
+Null User Names
+
+Some records lacked name values. Addressed by refining joins and confirming test data consistency.
 
 Some users had no transactions. Filtering only customers with valid transactions ensured accuracy.
 
@@ -111,5 +126,5 @@ Some users had no transactions. Filtering only customers with valid transactions
 
 ---
 
-**Submitted by:** Daniel Ezeh
+**Submitted by:** Daniel Onuabuchi Ezeh
 
